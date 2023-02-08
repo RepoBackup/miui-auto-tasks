@@ -32,7 +32,7 @@ def system_info():
 
 
 def get_config() -> dict:
-    config = {'account': []}
+
     config_path_yaml = dotenv.find_dotenv(filename='config.yaml')
 
     # the new version yaml config, old version is no longer use.
