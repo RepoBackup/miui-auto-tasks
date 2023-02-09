@@ -1,0 +1,12 @@
+### push msg
+POST https://sctapi.ftqq.com/{{server}}.send
+Content-Type: application/json;charset=utf-8
+
+{
+  "title": "Test1 msg",
+  "desp": "Test desp",
+  "short": "Test short"
+}
+
+### lookup msg status
+GET https://sctapi.ftqq.com/push?id={{openid}}&readkey={{readkey}}
