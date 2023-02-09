@@ -8,6 +8,7 @@ import requests
 from urllib import request
 from http import cookiejar
 
+from utils.server import Server
 from utils.utils import system_info, get_config, w_log, s_log, check_config, format_config, random_sleep, \
     sleep_ten_sec_more
 
@@ -427,8 +428,8 @@ def start(miui_task: MIUITask, check_in: bool, carrot_pull: bool, browse_special
         miui_task.board_follow()
         random_sleep()
         miui_task.browse_user_page()
-        random_sleep()
-        miui_task.get_point()
+        return True
+    return False
 
 
 def main():
@@ -445,16 +446,18 @@ def main():
     if not check_config(config):
         w_log('配置文件没有正确配置')
         exit(1)
-    else:
-        config = format_config(config)
+
+    config = format_config(config)
+    push = Server(config)
 
     for i in config.get('accounts'):
         w_log('---------- EXECUTING -------------')
-        start(
-            MIUITask(i.get('uid'), i.get('password'), i.get('user-agent'), device_id=i.get('device-id')),
-            i.get('check-in'), i.get('carrot-pull'), i.get('browse-specialpage'),
-        )
-        time.sleep(5)
+        miui_task = MIUITask(i.get('uid'), i.get('password'), i.get('user-agent'), device_id=i.get('device-id'))
+        if start(miui_task, i.get('check-in'), i.get('carrot-pull'), i.get('browse-specialpage')) or 1:
+            time.sleep(5)
+            if push.key:
+                # _ = push.send('今日MIUI自动任务已完成, 当前的成长值为：' + miui_task.get_point())
+                _ = push.send('账户「' + i.get('uid') + '」今日任务已完成，现在的成长值是' + miui_task.get_point())
     s_log(config.get('logging'))
 
 
